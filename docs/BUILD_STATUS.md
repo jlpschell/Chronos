@@ -3,7 +3,7 @@
 Last updated: 2026-01-18
 
 ## Baseline Estimate
-- Overall: **~40%** (updated from 20%)
+- Overall: **~60%** (updated from 50%)
 - Basis: README MVP + specs
 
 ## MVP Checklist
@@ -16,16 +16,18 @@ Status legend: Done | In Progress | Not Started
 - Not Started - Global loading/empty states
 
 ### Intake Flow (60-second calibration)
-- Not Started - Intake UI screens (velocity, geometry, constellation)
-- Not Started - Persona + bouncer mode confirmation
+- Done - Intake UI screens (velocity, geometry, constellation) (`web/src/components/features/IntakeFlow.tsx`)
+- Done - Persona + bouncer mode derivation (automatic from velocity)
 - Done - Store logic for intake state transitions (`web/src/stores/user.store.ts`)
 - Done - Default user state + persistence (`web/src/db/schema.ts`)
+- Done - Voice-first delivery (TTS for questions)
 
 ### Calendar Sync (Google OAuth first)
-- Not Started - OAuth flow + token storage
-- Not Started - Calendar list fetch
-- Not Started - Event sync + upsert pipeline
-- Not Started - Sync status UI / last synced indicators
+- Done - OAuth flow + token storage (`web/src/services/google-auth.service.ts`)
+- Done - Calendar list fetch (`web/src/services/google-calendar.service.ts`)
+- Done - Event sync + upsert pipeline (sync token support)
+- Done - Sync status UI / calendar picker (`web/src/components/features/CalendarConnect.tsx`)
+- Done - Setup documentation (`docs/CALENDAR_SETUP.md`)
 
 ### Time GPS (Zoomable year → 15-min view)
 - Done - Zoom state model + configs (`web/src/types/life-os.types.ts`)
@@ -78,15 +80,16 @@ Status legend: Done | In Progress | Not Started
 - Done - Fun theme lock at 30 active days (`web/src/lib/themes.ts`)
 
 ## What's Next (Highest Impact)
-1. Add Google OAuth + calendar sync service.
-2. Implement intake flow UI to unlock persona + initial data.
+1. ~~Add Google OAuth + calendar sync service.~~ ✓
+2. ~~Implement intake flow UI to unlock persona + initial data.~~ ✓
 3. Build proper routing (react-router).
 4. Add transparency UI for Ralph Loop ("What I've learned").
 5. Add summary display UI.
+6. Add Bouncer notification filtering.
 
 ## Notes / Concerns
-- Time GPS and Voice Input are now functional end-to-end.
-- Events are local-only until calendar sync is wired.
+- Time GPS, Voice Input, and Calendar Sync are now functional end-to-end.
+- Calendar sync requires Google Cloud setup (see `docs/CALENDAR_SETUP.md`).
 - Offline-first promise needs encryption + export to be credible.
 - LLM features require API key; fallback exists but UX needs guardrails.
 
@@ -99,3 +102,5 @@ Status legend: Done | In Progress | Not Started
 - 2026-01-18: Completed Voice → event creation with time parsing (e.g., "schedule meeting tomorrow morning").
 - 2026-01-18: Added events store (`web/src/stores/events.store.ts`) for local-first event CRUD.
 - 2026-01-18: Wired voice memo attachment to events store.
+- 2026-01-18: Added Google Calendar OAuth + sync pipeline with incremental sync tokens.
+- 2026-01-18: Added intake flow UI with 3 calibration questions + voice-first delivery.

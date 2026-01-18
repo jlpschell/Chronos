@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { ThemeSelector, VoicePanel, TimelineView } from './components/features';
+import { ThemeSelector, VoicePanel, TimelineView, CalendarConnect, IntakeFlow } from './components/features';
 import { useUserStore } from './stores/user.store';
 import { useEventsStore } from './stores/events.store';
 import type { ChronosEvent } from './types';
@@ -8,8 +8,9 @@ import './styles/themes.css';
 
 export default function App() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'timeline' | 'voice'>('timeline');
+  const [activeTab, setActiveTab] = useState<'timeline' | 'voice' | 'calendar'>('timeline');
   const themeId = useUserStore((s) => s.themeId);
+  const intakeCompleted = useUserStore((s) => s.intakeCompleted);
 
   // Load events from DB on mount
   useEffect(() => {
@@ -23,6 +24,11 @@ export default function App() {
   const handleEventClick = (event: ChronosEvent) => {
     setSelectedEventId(event.id);
   };
+
+  // Show intake flow if not completed
+  if (!intakeCompleted) {
+    return <IntakeFlow />;
+  }
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -61,6 +67,17 @@ export default function App() {
           >
             Voice
           </button>
+          <button
+            type="button"
+            className={`px-4 py-2 text-sm rounded-t transition-colors ${
+              activeTab === 'calendar'
+                ? 'bg-accent text-white'
+                : 'hover:bg-ink/5'
+            }`}
+            onClick={() => setActiveTab('calendar')}
+          >
+            Calendar
+          </button>
         </div>
 
         {activeTab === 'timeline' && (
@@ -88,6 +105,10 @@ export default function App() {
 
         {activeTab === 'voice' && (
           <VoicePanel defaultEventId={selectedEventId} />
+        )}
+
+        {activeTab === 'calendar' && (
+          <CalendarConnect />
         )}
       </main>
     </div>
