@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+server/.env
+
+# Build outputs
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Capacitor (mobile builds)
+ios/
+android/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Memory files that contain user data (generated at runtime)
+memory/*.json
+!memory/.gitkeep
+
+# Cursor plans (local to developer)
+.cursor/

@@ -1,0 +1,2 @@
+# This file ensures the memory/ folder exists in git
+# JSON files in this folder are gitignored (they contain user data)
