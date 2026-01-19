@@ -3,10 +3,11 @@
 // UI for connecting and syncing Google Calendar
 // ============================================================================
 
+import { useEffect, useState } from 'react';
 import { useGoogleCalendar } from '../../hooks/useGoogleCalendar';
 import { LastSyncedIndicator } from './LastSyncedIndicator';
 import { useUserStore } from '../../stores/user.store';
-import { isGoogleConfigured } from '../../services/google-auth.service';
+import { isGoogleConfigured, getTokenExpiryMinutes } from '../../services/google-auth.service';
 
 export function CalendarConnect() {
   const {
@@ -27,6 +28,25 @@ export function CalendarConnect() {
   
   // Check if Google is configured
   const googleConfigured = isGoogleConfigured();
+  
+  // Track token expiry
+  const [expiryMinutes, setExpiryMinutes] = useState<number | null>(null);
+  
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setExpiryMinutes(null);
+      return;
+    }
+    
+    // Update expiry every minute
+    const updateExpiry = () => setExpiryMinutes(getTokenExpiryMinutes());
+    updateExpiry();
+    const interval = setInterval(updateExpiry, 60000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+  
+  const isExpiringSoon = expiryMinutes !== null && expiryMinutes <= 10;
+  const isExpired = expiryMinutes !== null && expiryMinutes <= 0;
 
   return (
     <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
@@ -75,9 +95,46 @@ export function CalendarConnect() {
 
       {/* Connection status */}
       {isAuthenticated && (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-ink/70">Connected as {userEmail || 'unknown'}</span>
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${isExpired ? 'bg-red-500' : isExpiringSoon ? 'bg-amber-500' : 'bg-green-500'}`} />
+            <span className="text-ink/70">Connected as {userEmail || 'unknown'}</span>
+          </div>
+          {expiryMinutes !== null && (
+            <span className={`text-xs ${isExpired ? 'text-red-500' : isExpiringSoon ? 'text-amber-500' : 'text-ink/50'}`}>
+              {isExpired ? '⚠️ Session expired' : `${expiryMinutes}m remaining`}
+            </span>
+          )}
+        </div>
+      )}
+      
+      {/* Token expired warning */}
+      {isAuthenticated && isExpired && (
+        <div className="flex items-center justify-between p-3 rounded bg-red-500/10 border border-red-500/20">
+          <div className="text-sm text-red-600">
+            <strong>Session expired!</strong> Google tokens last 1 hour.
+          </div>
+          <button
+            type="button"
+            className="px-3 py-1.5 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+            onClick={connect}
+          >
+            Reconnect
+          </button>
+        </div>
+      )}
+      
+      {/* Token expiring soon warning */}
+      {isAuthenticated && isExpiringSoon && !isExpired && (
+        <div className="flex items-center justify-between p-2 rounded bg-amber-500/10 text-xs">
+          <span className="text-amber-600">Session expiring soon - reconnect to continue syncing</span>
+          <button
+            type="button"
+            className="px-2 py-1 rounded bg-amber-500 text-white hover:bg-amber-600"
+            onClick={connect}
+          >
+            Refresh
+          </button>
         </div>
       )}
 

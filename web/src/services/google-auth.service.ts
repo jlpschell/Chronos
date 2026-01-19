@@ -274,3 +274,15 @@ export function isTokenExpiringSoon(): boolean {
   const expiresAt = authState.tokens.expiresAt.getTime();
   return expiresAt - Date.now() < fiveMinutes;
 }
+
+/**
+ * Get time remaining until token expires (in minutes)
+ */
+export function getTokenExpiryMinutes(): number | null {
+  if (!authState.tokens) return null;
+  
+  const msRemaining = authState.tokens.expiresAt.getTime() - Date.now();
+  if (msRemaining <= 0) return 0;
+  
+  return Math.round(msRemaining / 60000);
+}
