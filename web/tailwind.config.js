@@ -8,11 +8,11 @@ export default {
     extend: {
       colors: {
         // Theme-aware colors via CSS variables
-        canvas: 'var(--color-canvas)',
-        surface: 'var(--color-surface)',
-        ink: 'var(--color-ink)',
+        canvas: 'var(--bg-canvas)',
+        surface: 'var(--bg-surface)',
+        ink: 'var(--text-primary)',
         accent: 'var(--color-accent)',
-        border: 'var(--color-border)',
+        border: 'var(--border-line)',
       },
     },
   },

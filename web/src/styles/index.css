@@ -1,9 +1,9 @@
+/* Import theme variables - must come first */
+@import './themes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import theme variables */
-@import './themes.css';
 
 /* Base styles */
 html {

@@ -4,6 +4,8 @@
 // ============================================================================
 
 import { useGoogleCalendar } from '../../hooks/useGoogleCalendar';
+import { LastSyncedIndicator } from './LastSyncedIndicator';
+import { useUserStore } from '../../stores/user.store';
 
 export function CalendarConnect() {
   const {
@@ -18,6 +20,9 @@ export function CalendarConnect() {
     disconnect,
     syncAll,
   } = useGoogleCalendar();
+
+  // Get calendar connections for last sync times
+  const calendarConnections = useUserStore((s) => s.calendarsConnected);
 
   return (
     <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
@@ -92,11 +97,21 @@ export function CalendarConnect() {
         </div>
       )}
 
-      {/* Last sync result */}
-      {lastSyncResult && (
-        <div className="text-sm text-ink/60">
-          Last sync: {lastSyncResult.success ? '✓' : '✗'}{' '}
-          {lastSyncResult.eventsAdded} added, {lastSyncResult.eventsUpdated} updated
+      {/* Last sync status */}
+      {isAuthenticated && calendarConnections.length > 0 && (
+        <div className="flex items-center justify-between text-sm border-t border-border pt-3">
+          <LastSyncedIndicator
+            provider="Google Calendar"
+            lastSynced={calendarConnections[0]?.lastSynced}
+            onRefresh={syncAll}
+            isRefreshing={isSyncing}
+          />
+          {lastSyncResult && (
+            <span className="text-xs text-ink/50">
+              {lastSyncResult.success ? '✓' : '✗'} {lastSyncResult.eventsAdded} added,{' '}
+              {lastSyncResult.eventsUpdated} updated
+            </span>
+          )}
         </div>
       )}
 

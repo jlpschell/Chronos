@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import { IntakeFlow } from './components/features';
 import { AppLayout } from './components/layout/AppLayout';
@@ -10,6 +10,7 @@ import { SettingsPage } from './pages/Settings';
 import { RalphPage } from './pages/Ralph';
 import { SummaryPage } from './pages/Summary';
 import { OAuthCallback } from './pages/OAuthCallback';
+import { ShowcasePage } from './pages/Showcase';
 import { useUserStore } from './stores/user.store';
 import { useEventsStore } from './stores/events.store';
 import { useBouncerStore } from './stores/bouncer.store';
@@ -17,6 +18,7 @@ import { useRalphStore } from './stores/ralph.store';
 import { NotificationTriggers } from './services/notification-triggers.service';
 
 export default function App() {
+  const location = useLocation();
   const themeId = useUserStore((s) => s.themeId);
   const intakeCompleted = useUserStore((s) => s.intakeCompleted);
 
@@ -43,13 +45,20 @@ export default function App() {
     document.body.dataset.theme = themeId ?? 'moonlit';
   }, [themeId]);
 
-  // Show intake flow if not completed
-  if (!intakeCompleted) {
+  // Routes that bypass intake flow
+  const bypassIntakePaths = ['/showcase', '/oauth/callback'];
+  const shouldBypassIntake = bypassIntakePaths.some((path) => location.pathname.startsWith(path));
+
+  // Show intake flow if not completed (unless on bypass route)
+  if (!intakeCompleted && !shouldBypassIntake) {
     return <IntakeFlow />;
   }
 
   return (
     <Routes>
+      {/* Showcase route (bypasses intake + layout) */}
+      <Route path="/showcase" element={<ShowcasePage />} />
+
       {/* OAuth callback route (outside layout) */}
       <Route path="/oauth/callback" element={<OAuthCallback />} />
 

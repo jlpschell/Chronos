@@ -9,3 +9,6 @@ export { RalphTransparency } from './RalphTransparency';
 export { SummaryPanel } from './SummaryPanel';
 export { BouncerPanel } from './BouncerPanel';
 export { BouncerPreferences } from './BouncerPreferences';
+export { GoalsPanel } from './GoalsPanel';
+export { DataManagement } from './DataManagement';
+export { LastSyncedIndicator, SyncStatusBar } from './LastSyncedIndicator';

@@ -4,7 +4,13 @@
 // ============================================================================
 
 import { useUserStore } from '../stores/user.store';
-import { BouncerPanel, BouncerPreferences, ThemeSelector } from '../components/features';
+import {
+  BouncerPanel,
+  BouncerPreferences,
+  ThemeSelector,
+  GoalsPanel,
+  DataManagement,
+} from '../components/features';
 
 export function SettingsPage() {
   const {
@@ -149,23 +155,16 @@ export function SettingsPage() {
         </div>
       </section>
 
+      {/* Goals Section */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Goals</h2>
+        <GoalsPanel />
+      </section>
+
       {/* Data Section */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Data</h2>
-        <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
-          <button
-            type="button"
-            className="text-sm text-ink/70 hover:text-accent transition-colors"
-          >
-            Export data (coming soon)
-          </button>
-          <button
-            type="button"
-            className="text-sm text-red-500/70 hover:text-red-500 transition-colors block"
-          >
-            Clear all data (coming soon)
-          </button>
-        </div>
+        <DataManagement />
       </section>
 
       {/* Bouncer Section */}

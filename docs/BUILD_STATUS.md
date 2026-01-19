@@ -3,7 +3,7 @@
 Last updated: 2026-01-19
 
 ## Baseline Estimate
-- Overall: **~85%** (updated from 80%)
+- Overall: **~92%** (updated from 85%)
 - Basis: README MVP + specs
 
 ## MVP Checklist
@@ -73,12 +73,24 @@ Status legend: Done | In Progress | Not Started
 ### Offline-First & Privacy
 - Done - Local-first schema + persistence utilities (`web/src/db/schema.ts`)
 - Not Started - Encryption at rest for sensitive fields
-- Not Started - Data export/import UI
-- Not Started - "Last synced" indicators
+- Done - Data export/import UI (`web/src/components/features/DataManagement.tsx`)
+  - JSON export with all user data
+  - Import with merge support
+  - Clear all data with confirmation
+- Done - "Last synced" indicators (`web/src/components/features/LastSyncedIndicator.tsx`)
+  - Relative time display (just now, 5m ago, etc.)
+  - Color-coded status (green/amber/red)
+  - Integrated into CalendarConnect
 
 ### Goals & Coaching
 - Done - Base goal types (`web/src/types/index.ts`)
-- Not Started - Goal CRUD UI + progress views
+- Done - Goal CRUD UI + progress views (`web/src/components/features/GoalsPanel.tsx`)
+  - Create/edit/delete goals with modal form
+  - Progress ring visualization
+  - Quick +1 progress button
+  - Status badges (active, drifting, completed, archived)
+  - Deadline countdown with urgency colors
+  - Filter by status (active/completed/all)
 - Not Started - Coaching conversations + goal drift detection UI
 
 ### Themes & Gamification
@@ -94,10 +106,13 @@ Status legend: Done | In Progress | Not Started
 4. ~~Add transparency UI for Ralph Loop ("What I've learned").~~ ✓
 5. ~~Add summary display UI.~~ ✓
 6. ~~Wire real notification sources into Bouncer.~~ ✓
-7. Test full flow end-to-end.
-8. Add Goal CRUD UI + progress views.
-9. Add "Last synced" indicators across the app.
-10. Add data export/import UI for offline-first credibility.
+7. ~~Test full flow end-to-end.~~ ✓ (Showcase page at /showcase)
+8. ~~Add Goal CRUD UI + progress views.~~ ✓
+9. ~~Add "Last synced" indicators across the app.~~ ✓
+10. ~~Add data export/import UI for offline-first credibility.~~ ✓
+11. Add encryption at rest for sensitive fields.
+12. Add coaching conversations UI.
+13. Add global loading/empty states.
 
 ## Notes / Concerns
 - Time GPS, Voice Input, and Calendar Sync are now functional end-to-end.
@@ -127,3 +142,8 @@ Status legend: Done | In Progress | Not Started
 - 2026-01-19: Added Ralph → Bouncer notification bridge for learned patterns + decay warnings.
 - 2026-01-19: Added sync complete notifications to calendar service.
 - 2026-01-19: Updated BouncerPanel with source icons, priority badges, and "Check now" trigger.
+- 2026-01-19: Added GoalsPanel with full CRUD, progress rings, status badges, and deadline tracking.
+- 2026-01-19: Added DataManagement component for JSON export/import and data clearing.
+- 2026-01-19: Added LastSyncedIndicator with relative time and color-coded status.
+- 2026-01-19: Updated ShowcasePage with Goals and Data Management sections + mock data.
+- 2026-01-19: Integrated LastSyncedIndicator into CalendarConnect component.
