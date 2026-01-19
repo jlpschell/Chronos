@@ -89,11 +89,23 @@ export const db = new ChronosDB();
 export const DEFAULT_USER_STATE: UserState = {
   id: 'default',
   intakeCompleted: false,
+  
+  // Core calibration
   velocity: null,
   geometry: null,
   constellation: null,
+  
+  // Extended calibration
+  chronotype: null,
+  bufferPreference: null,
+  stressResponse: null,
+  motivationStyle: null,
+  
+  // Derived
   bouncerMode: null,
   persona: null,
+  
+  // UI
   themeId: 'moonlit',
   goals: [],
   emergencyContacts: [],

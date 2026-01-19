@@ -11,6 +11,10 @@ import type {
   Velocity,
   Geometry,
   Constellation,
+  Chronotype,
+  BufferPreference,
+  StressResponse,
+  MotivationStyle,
   Persona,
   BouncerMode,
   ThemeId,
@@ -26,10 +30,17 @@ import { db, DEFAULT_USER_STATE, updateUserState } from '../db/schema';
 // ----------------------------------------------------------------------------
 
 interface UserStore extends UserState {
-  // Intake actions
+  // Intake actions (core)
   setVelocity: (velocity: Velocity) => void;
   setGeometry: (geometry: Geometry) => void;
   setConstellation: (constellation: Constellation) => void;
+  
+  // Intake actions (extended)
+  setChronotype: (chronotype: Chronotype) => void;
+  setBufferPreference: (bufferPreference: BufferPreference) => void;
+  setStressResponse: (stressResponse: StressResponse) => void;
+  setMotivationStyle: (motivationStyle: MotivationStyle) => void;
+  
   completeIntake: () => void;
   resetIntake: () => void;
 
@@ -71,14 +82,53 @@ interface UserStore extends UserState {
 // Persona Derivation
 // ----------------------------------------------------------------------------
 
-function derivePersona(velocity: Velocity | null): Persona | null {
+function derivePersona(
+  velocity: Velocity | null,
+  stressResponse: StressResponse | null
+): Persona | null {
   if (!velocity) return null;
-  return velocity === 'high_efficiency' ? 'shop_foreman' : 'supportive_peer';
+  
+  // Primary: velocity determines base persona
+  // Secondary: stress response can modify it
+  if (velocity === 'high_efficiency') {
+    // Efficiency-focused people who want space when stressed might prefer supportive
+    return stressResponse === 'more_space' ? 'supportive_peer' : 'shop_foreman';
+  } else {
+    // Sustainable pace people who want structure when stressed might prefer foreman
+    return stressResponse === 'more_structure' ? 'shop_foreman' : 'supportive_peer';
+  }
 }
 
-function deriveBouncerMode(velocity: Velocity | null): BouncerMode | null {
+function deriveBouncerMode(
+  velocity: Velocity | null,
+  bufferPreference: BufferPreference | null
+): BouncerMode | null {
   if (!velocity) return null;
+  
+  // Buffer preference can override velocity-based default
+  if (bufferPreference === 'packed') return 'fluid';
+  if (bufferPreference === 'generous_gaps') return 'strict';
+  
+  // Fall back to velocity-based default
   return velocity === 'high_efficiency' ? 'fluid' : 'strict';
+}
+
+function derivePreferredBuffer(bufferPreference: BufferPreference | null): number {
+  switch (bufferPreference) {
+    case 'packed': return 5;
+    case 'breathing_room': return 15;
+    case 'generous_gaps': return 30;
+    default: return 15;
+  }
+}
+
+function derivePeakHours(chronotype: Chronotype | null): string[] {
+  switch (chronotype) {
+    case 'early_bird': return ['06:00-10:00', '14:00-16:00'];
+    case 'night_owl': return ['10:00-12:00', '20:00-23:00'];
+    case 'flexible': return ['09:00-12:00', '14:00-17:00'];
+    default: return [];
+  }
 }
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -106,8 +156,6 @@ export const useUserStore = create<UserStore>()(
       setVelocity: (velocity) => {
         set((state) => {
           state.velocity = velocity;
-          state.persona = derivePersona(velocity);
-          state.bouncerMode = deriveBouncerMode(velocity);
           state.onboardingStep = Math.max(state.onboardingStep, 1);
         });
         get().syncToDb();
@@ -129,11 +177,50 @@ export const useUserStore = create<UserStore>()(
         get().syncToDb();
       },
 
+      setChronotype: (chronotype) => {
+        set((state) => {
+          state.chronotype = chronotype;
+          state.preferences.peakHours = derivePeakHours(chronotype);
+          state.onboardingStep = Math.max(state.onboardingStep, 4);
+        });
+        get().syncToDb();
+      },
+
+      setBufferPreference: (bufferPreference) => {
+        set((state) => {
+          state.bufferPreference = bufferPreference;
+          state.preferences.preferredBuffer = derivePreferredBuffer(bufferPreference);
+          state.bouncerMode = deriveBouncerMode(state.velocity, bufferPreference);
+          state.onboardingStep = Math.max(state.onboardingStep, 5);
+        });
+        get().syncToDb();
+      },
+
+      setStressResponse: (stressResponse) => {
+        set((state) => {
+          state.stressResponse = stressResponse;
+          state.persona = derivePersona(state.velocity, stressResponse);
+          state.onboardingStep = Math.max(state.onboardingStep, 6);
+        });
+        get().syncToDb();
+      },
+
+      setMotivationStyle: (motivationStyle) => {
+        set((state) => {
+          state.motivationStyle = motivationStyle;
+          state.onboardingStep = Math.max(state.onboardingStep, 7);
+        });
+        get().syncToDb();
+      },
+
       completeIntake: () => {
         set((state) => {
+          // Final derivations with all data
+          state.persona = derivePersona(state.velocity, state.stressResponse);
+          state.bouncerMode = deriveBouncerMode(state.velocity, state.bufferPreference);
           state.intakeCompleted = true;
           state.calibrationDate = new Date();
-          state.onboardingStep = 4;
+          state.onboardingStep = 8;
         });
         get().syncToDb();
       },
@@ -144,6 +231,10 @@ export const useUserStore = create<UserStore>()(
           state.velocity = null;
           state.geometry = null;
           state.constellation = null;
+          state.chronotype = null;
+          state.bufferPreference = null;
+          state.stressResponse = null;
+          state.motivationStyle = null;
           state.persona = null;
           state.bouncerMode = null;
           state.calibrationDate = null;
@@ -315,6 +406,10 @@ export const useUserStore = create<UserStore>()(
           velocity: state.velocity,
           geometry: state.geometry,
           constellation: state.constellation,
+          chronotype: state.chronotype,
+          bufferPreference: state.bufferPreference,
+          stressResponse: state.stressResponse,
+          motivationStyle: state.motivationStyle,
           bouncerMode: state.bouncerMode,
           persona: state.persona,
           themeId: state.themeId,
@@ -357,6 +452,10 @@ export const useUserStore = create<UserStore>()(
         velocity: state.velocity,
         geometry: state.geometry,
         constellation: state.constellation,
+        chronotype: state.chronotype,
+        bufferPreference: state.bufferPreference,
+        stressResponse: state.stressResponse,
+        motivationStyle: state.motivationStyle,
         persona: state.persona,
         bouncerMode: state.bouncerMode,
         onboardingStep: state.onboardingStep,

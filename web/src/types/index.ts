@@ -7,9 +7,18 @@
 // User & Calibration
 // ----------------------------------------------------------------------------
 
+// Core calibration types
 export type Velocity = 'high_efficiency' | 'sustainable_pace';
 export type Geometry = 'linear_horizon' | 'radial_watchface';
 export type Constellation = 'solo_pilot' | 'co_pilot' | 'crew_captain';
+
+// Extended calibration types (new)
+export type Chronotype = 'early_bird' | 'night_owl' | 'flexible';
+export type BufferPreference = 'packed' | 'breathing_room' | 'generous_gaps';
+export type StressResponse = 'more_structure' | 'more_space';
+export type MotivationStyle = 'streaks' | 'milestones' | 'both';
+
+// Derived types
 export type Persona = 'shop_foreman' | 'supportive_peer';
 export type BouncerMode = 'strict' | 'fluid';
 export type ThemeId = 'moonlit' | 'sepia' | 'warm' | 'cool' | 'fun';
@@ -17,11 +26,23 @@ export type ThemeId = 'moonlit' | 'sepia' | 'warm' | 'cool' | 'fun';
 export interface UserState {
   id: string;
   intakeCompleted: boolean;
+  
+  // Core calibration (original 3 questions)
   velocity: Velocity | null;
   geometry: Geometry | null;
   constellation: Constellation | null;
+  
+  // Extended calibration (new questions)
+  chronotype: Chronotype | null;
+  bufferPreference: BufferPreference | null;
+  stressResponse: StressResponse | null;
+  motivationStyle: MotivationStyle | null;
+  
+  // Derived from calibration
   bouncerMode: BouncerMode | null;
   persona: Persona | null;
+  
+  // UI preferences
   themeId: ThemeId | null;
   goals: Goal[];
   emergencyContacts: Contact[];

@@ -19,6 +19,10 @@ export function SettingsPage() {
     velocity,
     geometry,
     constellation,
+    chronotype,
+    bufferPreference,
+    stressResponse,
+    motivationStyle,
     persona,
     bouncerMode,
     stats,
@@ -28,15 +32,16 @@ export function SettingsPage() {
     resetIntake,
   } = useUserStore();
 
-  const velocityLabel = velocity === 'high_efficiency' ? 'Efficiency-focused' : 'Sustainable pace';
-  const geometryLabel = geometry === 'linear_horizon' ? 'Linear (path forward)' : 'Cyclical (rhythm)';
-  const constellationLabel =
-    constellation === 'solo_pilot'
-      ? 'Solo'
-      : constellation === 'co_pilot'
-      ? 'With partner'
-      : 'Team/family';
-  const personaLabel = persona === 'shop_foreman' ? 'Shop Foreman' : 'Supportive Peer';
+  // Label mappings
+  const labels = {
+    velocity: velocity === 'high_efficiency' ? '⚡ Efficiency-focused' : '🛡️ Sustainable pace',
+    geometry: geometry === 'linear_horizon' ? '→ Linear (goals)' : '◐ Cyclical (rhythms)',
+    constellation: constellation === 'solo_pilot' ? '🚀 Solo' : constellation === 'co_pilot' ? '👥 Partner' : '🌐 Team',
+    chronotype: chronotype === 'early_bird' ? '🌅 Early bird' : chronotype === 'night_owl' ? '🦉 Night owl' : '🔄 Flexible',
+    buffer: bufferPreference === 'packed' ? '📦 Minimal' : bufferPreference === 'breathing_room' ? '🌿 Moderate' : '🏔️ Generous',
+    stress: stressResponse === 'more_structure' ? '📋 More structure' : '💨 More space',
+    motivation: motivationStyle === 'streaks' ? '🔥 Streaks' : motivationStyle === 'milestones' ? '🏆 Milestones' : '⭐ Both',
+  };
 
   return (
     <div className="space-y-8 max-w-2xl">
@@ -44,19 +49,45 @@ export function SettingsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Your Profile</h2>
         <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-ink/60">Pace</span>
-            <span className="font-medium">{velocityLabel}</span>
+          {/* Calibration Summary */}
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-ink/60">Pace</span>
+              <span className="font-medium">{labels.velocity || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Time view</span>
+              <span className="font-medium">{labels.geometry || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Calendar</span>
+              <span className="font-medium">{labels.constellation || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Energy</span>
+              <span className="font-medium">{labels.chronotype || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Buffer</span>
+              <span className="font-medium">{labels.buffer || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Under stress</span>
+              <span className="font-medium">{labels.stress || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Motivation</span>
+              <span className="font-medium">{labels.motivation || '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink/60">Bouncer</span>
+              <span className="font-medium capitalize">{bouncerMode || '—'}</span>
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-ink/60">Time view</span>
-            <span className="font-medium">{geometryLabel}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-ink/60">Calendar style</span>
-            <span className="font-medium">{constellationLabel}</span>
-          </div>
+          
           <div className="border-t border-border my-3" />
+          
+          {/* AI Persona Toggle */}
           <div className="flex justify-between items-center text-sm">
             <div>
               <span className="text-ink/60">AI Persona</span>
@@ -87,16 +118,13 @@ export function SettingsPage() {
               </button>
             </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-ink/60">Bouncer mode</span>
-            <span className="font-medium capitalize">{bouncerMode}</span>
-          </div>
+          
           <button
             type="button"
             className="mt-4 text-xs text-ink/50 hover:text-accent transition-colors"
             onClick={resetIntake}
           >
-            Recalibrate (redo intake) →
+            Recalibrate (redo all 7 questions) →
           </button>
         </div>
       </section>
