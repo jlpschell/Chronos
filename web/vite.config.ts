@@ -5,5 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    strictPort: false, // Auto-find next available port if 5173 is taken
+    open: true,        // Auto-open browser when ready
   },
 });

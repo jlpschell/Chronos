@@ -2,6 +2,24 @@
 
 Last updated: 2026-01-19
 
+## Quick Start
+
+### Option 1: One-Click Launch (Recommended) 🚀
+Double-click `start-chronos.bat` in the project root, or:
+- Pin the **Chronos** shortcut on your Desktop to taskbar
+- Press `Win` key, type "Chronos", hit Enter
+
+### Option 2: Terminal
+```bash
+npm start
+```
+
+### Option 3: Dev mode (separate terminals)
+```bash
+cd server && npm run dev   # Terminal 1
+cd web && npm run dev      # Terminal 2
+```
+
 ## Baseline Estimate
 - Overall: **100%** MVP Complete! 🎉
 - Basis: README MVP + specs

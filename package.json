@@ -1,0 +1,16 @@
+{
+  "name": "chronos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chronos Life Operating System - One-click launcher",
+  "scripts": {
+    "start": "concurrently --kill-others -n \"SERVER,WEB\" -c \"cyan,magenta\" \"npm run server\" \"npm run web\"",
+    "server": "cd server && npm run dev",
+    "web": "cd web && npm run dev",
+    "install-all": "npm install && cd server && npm install && cd ../web && npm install",
+    "build": "cd web && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
