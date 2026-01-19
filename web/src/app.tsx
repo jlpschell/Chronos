@@ -1,29 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import { ThemeSelector, VoicePanel, TimelineView, CalendarConnect, IntakeFlow } from './components/features';
+import { IntakeFlow } from './components/features';
+import { AppLayout } from './components/layout/AppLayout';
+import { TimelinePage } from './pages/Timeline';
+import { VoicePage } from './pages/Voice';
+import { CalendarPage } from './pages/Calendar';
+import { SettingsPage } from './pages/Settings';
+import { RalphPage } from './pages/Ralph';
+import { SummaryPage } from './pages/Summary';
+import { OAuthCallback } from './pages/OAuthCallback';
 import { useUserStore } from './stores/user.store';
 import { useEventsStore } from './stores/events.store';
-import type { ChronosEvent } from './types';
-import './styles/themes.css';
+import { useBouncerStore } from './stores/bouncer.store';
+import { useRalphStore } from './stores/ralph.store';
+import { NotificationTriggers } from './services/notification-triggers.service';
 
 export default function App() {
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'timeline' | 'voice' | 'calendar'>('timeline');
   const themeId = useUserStore((s) => s.themeId);
   const intakeCompleted = useUserStore((s) => s.intakeCompleted);
 
-  // Load events from DB on mount
+  // Load data from DB on mount
   useEffect(() => {
+    useUserStore.getState().loadFromDb();
     useEventsStore.getState().loadFromDb();
+    useBouncerStore.getState().loadFromDb();
+    useRalphStore.getState().loadFromDb();
   }, []);
 
+  // Initialize notification triggers when intake is complete
+  useEffect(() => {
+    if (intakeCompleted) {
+      NotificationTriggers.initialize();
+      return () => {
+        NotificationTriggers.stop();
+      };
+    }
+  }, [intakeCompleted]);
+
+  // Apply theme to body
   useEffect(() => {
     document.body.dataset.theme = themeId ?? 'moonlit';
   }, [themeId]);
-
-  const handleEventClick = (event: ChronosEvent) => {
-    setSelectedEventId(event.id);
-  };
 
   // Show intake flow if not completed
   if (!intakeCompleted) {
@@ -31,86 +49,23 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink">
-      <main className="mx-auto max-w-5xl p-6 space-y-6">
-        <header className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold">Chronos</h1>
-            <p className="text-sm text-ink opacity-70">
-              Time GPS • Voice-first calendar
-            </p>
-          </div>
-          <ThemeSelector />
-        </header>
+    <Routes>
+      {/* OAuth callback route (outside layout) */}
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
 
-        {/* Tab switcher */}
-        <div className="flex gap-2 border-b border-border pb-2">
-          <button
-            type="button"
-            className={`px-4 py-2 text-sm rounded-t transition-colors ${
-              activeTab === 'timeline'
-                ? 'bg-accent text-white'
-                : 'hover:bg-ink/5'
-            }`}
-            onClick={() => setActiveTab('timeline')}
-          >
-            Timeline
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-2 text-sm rounded-t transition-colors ${
-              activeTab === 'voice'
-                ? 'bg-accent text-white'
-                : 'hover:bg-ink/5'
-            }`}
-            onClick={() => setActiveTab('voice')}
-          >
-            Voice
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-2 text-sm rounded-t transition-colors ${
-              activeTab === 'calendar'
-                ? 'bg-accent text-white'
-                : 'hover:bg-ink/5'
-            }`}
-            onClick={() => setActiveTab('calendar')}
-          >
-            Calendar
-          </button>
-        </div>
+      {/* Main app routes */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Navigate to="/timeline" replace />} />
+        <Route path="/timeline" element={<TimelinePage />} />
+        <Route path="/voice" element={<VoicePage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/summary" element={<SummaryPage />} />
+        <Route path="/ralph" element={<RalphPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
 
-        {activeTab === 'timeline' && (
-          <div className="space-y-4">
-            <TimelineView
-              onEventClick={handleEventClick}
-              selectedEventId={selectedEventId}
-            />
-
-            {selectedEventId && (
-              <div className="rounded border border-border bg-surface p-4">
-                <div className="text-sm font-medium mb-2">Selected Event</div>
-                <div className="text-xs text-ink/60">ID: {selectedEventId}</div>
-                <p className="text-xs text-ink/50 mt-2">
-                  Use Voice tab to attach memos to this event.
-                </p>
-              </div>
-            )}
-
-            <p className="text-xs text-ink/40 text-center">
-              Tip: Try saying "Schedule meeting tomorrow morning" in the Voice tab
-            </p>
-          </div>
-        )}
-
-        {activeTab === 'voice' && (
-          <VoicePanel defaultEventId={selectedEventId} />
-        )}
-
-        {activeTab === 'calendar' && (
-          <CalendarConnect />
-        )}
-      </main>
-    </div>
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

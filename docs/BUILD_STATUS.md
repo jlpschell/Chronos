@@ -1,9 +1,9 @@
 # Build Status Tracker
 
-Last updated: 2026-01-18
+Last updated: 2026-01-19
 
 ## Baseline Estimate
-- Overall: **~60%** (updated from 50%)
+- Overall: **~85%** (updated from 80%)
 - Basis: README MVP + specs
 
 ## MVP Checklist
@@ -11,8 +11,9 @@ Last updated: 2026-01-18
 Status legend: Done | In Progress | Not Started
 
 ### App Shell & Navigation
-- In Progress - App shell layout with tabs (`web/src/app.tsx`)
-- Not Started - Routing for core areas (intake, timeline, goals, settings)
+- Done - App shell layout with navigation (`web/src/components/layout/AppLayout.tsx`)
+- Done - Routing for core areas (`web/src/app.tsx` using react-router-dom)
+- Done - Full Vite project setup with dependencies (`web/package.json`)
 - Not Started - Global loading/empty states
 
 ### Intake Flow (60-second calibration)
@@ -47,20 +48,27 @@ Status legend: Done | In Progress | Not Started
 - Done - Voice UI components (`web/src/components/features/VoicePanel.tsx`, `web/src/components/features/VoiceMemoList.tsx`)
 
 ### Bouncer (Notification filtering)
-- Not Started - Scoring engine + lobby rules
-- Not Started - Notification queue + delivery
-- Not Started - Bouncer UI + preferences
+- Done - Scoring engine + lobby rules (`web/src/services/bouncer.service.ts`)
+- Done - Notification queue + delivery (`web/src/stores/bouncer.store.ts`)
+- Done - Bouncer UI + preferences (mode toggle, VIP/emergency lists, queue UI in `web/src/pages/Settings.tsx`)
+- Done - Real notification sources wired (`web/src/services/notification-triggers.service.ts`)
+  - Calendar event reminders (15min, 5min before)
+  - Calendar conflict detection
+  - Goal drift detection + deadline warnings
+  - Ralph pattern learning bridge
+  - System sync notifications
 
 ### Learning (Ralph Loop)
 - Done - Core store + hypothesis/pattern logic (`web/src/stores/ralph.store.ts`)
 - Done - Hooks for integration (`web/src/hooks/useRalph.ts`)
+- Done - Transparency UI ("What I've learned") (`web/src/components/features/RalphTransparency.tsx`)
+- Done - Ralph page with AI explanation (`web/src/pages/Ralph.tsx`)
 - In Progress - UI integration points (suggestion components)
-- Not Started - Transparency UI ("What I've learned") surface
 
 ### Temporal Summaries
 - Done - Summary service + LLM narrative (`web/src/services/summary.service.ts`)
 - In Progress - Scheduling integration in UI/app lifecycle
-- Not Started - Summary display UI (day/week/month/year)
+- Done - Summary display UI (`web/src/pages/Summary.tsx`, `web/src/components/features/SummaryPanel.tsx`)
 
 ### Offline-First & Privacy
 - Done - Local-first schema + persistence utilities (`web/src/db/schema.ts`)
@@ -82,10 +90,14 @@ Status legend: Done | In Progress | Not Started
 ## What's Next (Highest Impact)
 1. ~~Add Google OAuth + calendar sync service.~~ ✓
 2. ~~Implement intake flow UI to unlock persona + initial data.~~ ✓
-3. Build proper routing (react-router).
-4. Add transparency UI for Ralph Loop ("What I've learned").
-5. Add summary display UI.
-6. Add Bouncer notification filtering.
+3. ~~Build proper routing (react-router).~~ ✓
+4. ~~Add transparency UI for Ralph Loop ("What I've learned").~~ ✓
+5. ~~Add summary display UI.~~ ✓
+6. ~~Wire real notification sources into Bouncer.~~ ✓
+7. Test full flow end-to-end.
+8. Add Goal CRUD UI + progress views.
+9. Add "Last synced" indicators across the app.
+10. Add data export/import UI for offline-first credibility.
 
 ## Notes / Concerns
 - Time GPS, Voice Input, and Calendar Sync are now functional end-to-end.
@@ -104,3 +116,14 @@ Status legend: Done | In Progress | Not Started
 - 2026-01-18: Wired voice memo attachment to events store.
 - 2026-01-18: Added Google Calendar OAuth + sync pipeline with incremental sync tokens.
 - 2026-01-18: Added intake flow UI with 3 calibration questions + voice-first delivery.
+- 2026-01-18: Set up full Vite project with react-router, pages, and layout components.
+- 2026-01-18: Added Ralph transparency UI showing learned patterns and active hypotheses.
+- 2026-01-18: Added Summary page with day/week/month summaries and metrics.
+- 2026-01-18: Added Bouncer queue logic with lobby delivery and basic UI.
+- 2026-01-18: Added Bouncer preferences UI (mode, VIP/emergency lists).
+- 2026-01-19: Wired real notification sources into Bouncer system (`web/src/services/notification-triggers.service.ts`).
+- 2026-01-19: Added calendar event reminders (15min/5min before), conflict detection.
+- 2026-01-19: Added goal drift detection + deadline warnings (30/7/1 days).
+- 2026-01-19: Added Ralph → Bouncer notification bridge for learned patterns + decay warnings.
+- 2026-01-19: Added sync complete notifications to calendar service.
+- 2026-01-19: Updated BouncerPanel with source icons, priority badges, and "Check now" trigger.

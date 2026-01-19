@@ -6,6 +6,7 @@
 import { CALENDAR_CONFIG } from '../lib/config';
 import { getAccessToken } from './google-auth.service';
 import { useEventsStore } from '../stores/events.store';
+import { NotificationTriggers } from './notification-triggers.service';
 import type { ChronosEvent, EventGrain, Attendee } from '../types';
 import { nanoid } from 'nanoid';
 
@@ -316,7 +317,17 @@ export async function syncAllCalendars(): Promise<SyncResult[]> {
   for (const calendar of calendars) {
     const result = await syncCalendar(calendar.id);
     results.push(result);
+
+    // Notify on successful sync with changes
+    if (result.success && (result.eventsAdded > 0 || result.eventsUpdated > 0)) {
+      const totalChanges = result.eventsAdded + result.eventsUpdated;
+      NotificationTriggers.notifySyncComplete(calendar.summary, totalChanges);
+    }
   }
+
+  // After sync, trigger a check for conflicts and reminders
+  NotificationTriggers.checkConflicts();
+  NotificationTriggers.checkEvents();
 
   return results;
 }
