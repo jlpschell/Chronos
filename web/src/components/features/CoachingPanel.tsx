@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useUserStore } from '../../stores/user.store';
 import { useRalphStore } from '../../stores/ralph.store';
-import { getCoachingResponse, type ChatMessage } from '../../services/llm.service';
+import { getCoachingResponse, isLLMConfigured, type ChatMessage } from '../../services/llm.service';
 import type { Goal, Persona } from '../../types';
 
 // ----------------------------------------------------------------------------
@@ -75,6 +75,7 @@ export function CoachingPanel({ goal, onClose }: CoachingPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const llmConfigured = isLLMConfigured();
 
   // Initial greeting
   useEffect(() => {
@@ -197,6 +198,17 @@ export function CoachingPanel({ goal, onClose }: CoachingPanelProps) {
           </button>
         )}
       </div>
+      
+      {/* LLM not configured tip */}
+      {!llmConfigured && (
+        <div className="px-4 py-2 bg-amber-500/10 text-xs text-amber-600 flex items-center gap-2">
+          <span>💡</span>
+          <span>
+            Using basic mode. For smarter AI, add <code className="bg-amber-500/20 px-1 rounded">VITE_OPENROUTER_API_KEY</code> to .env
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" className="ml-1 underline">(free)</a>
+          </span>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

@@ -246,6 +246,7 @@ export async function getCoachingResponse(
 
 /**
  * Simulated coaching response when LLM is unavailable
+ * Provides varied, context-aware responses without API
  */
 function getSimulatedCoachingResponse(
   userMessage: string,
@@ -254,31 +255,144 @@ function getSimulatedCoachingResponse(
   const isForeman = context.persona === 'shop_foreman';
   const lowerMessage = userMessage.toLowerCase();
 
-  if (lowerMessage.includes('stuck') || lowerMessage.includes('block')) {
+  // More keywords for better matching
+  const isAboutStuck = /stuck|block|can'?t|difficult|hard|struggling|obstacle|problem/.test(lowerMessage);
+  const isAboutProgress = /progress|celebrate|win|did it|finished|completed|success|proud|accomplished/.test(lowerMessage);
+  const isAboutAdjust = /adjust|change|modify|different|rethink|pivot|reconsider/.test(lowerMessage);
+  const isAboutNext = /next|focus|priority|should i|what do|start|begin/.test(lowerMessage);
+  const isAboutFeeling = /feel|anxious|stressed|worried|overwhelmed|tired|exhausted|scared/.test(lowerMessage);
+  const isAboutMotivation = /motivat|inspir|energy|drive|why|purpose|point/.test(lowerMessage);
+  const isQuestion = /\?|how|what|why|when|should/.test(lowerMessage);
+  const isGreeting = /^(hi|hello|hey|good morning|good evening|sup)/i.test(lowerMessage.trim());
+
+  // Varied responses with randomization
+  const pick = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
+  if (isGreeting) {
     return isForeman
-      ? "What's the smallest next action you could take? Sometimes momentum beats perfection."
-      : "That's frustrating. What feels like the biggest obstacle right now? Sometimes just naming it helps.";
+      ? pick(["Let's get to work. What's on your plate?", "Ready when you are. What's the priority?", "Good. What needs doing?"])
+      : pick(["Hey there! How are you feeling today?", "Hi! What's on your mind?", "Hello! I'm glad you're here. What would you like to talk about?"]);
   }
 
-  if (lowerMessage.includes('progress') || lowerMessage.includes('celebrate') || lowerMessage.includes('win')) {
+  if (isAboutFeeling) {
     return isForeman
-      ? "Good work. Log it and keep moving. What's next?"
-      : "That's wonderful! 🎉 Take a moment to appreciate that. You earned it.";
+      ? pick([
+          "Feelings are data. What's causing this?",
+          "Noted. But what can you actually control here?",
+          "That's real. Now—what's one thing you CAN do about it?",
+        ])
+      : pick([
+          "Thank you for sharing that. Those feelings are valid. What's weighing on you most?",
+          "It takes courage to acknowledge how we feel. What would help right now?",
+          "I hear you. Sometimes just naming our feelings helps. What else is going on?",
+          "That sounds tough. Remember, it's okay to not be okay. What do you need?",
+        ]);
   }
 
-  if (lowerMessage.includes('adjust') || lowerMessage.includes('change')) {
+  if (isAboutStuck) {
     return isForeman
-      ? "Goals should serve you. What would make this more realistic?"
-      : "Goals can evolve—that's healthy. What would feel more right to you now?";
+      ? pick([
+          "What's the smallest next action? Just one thing.",
+          "Break it down. What's the actual blocker?",
+          "Stuck means unclear. What specifically is unclear?",
+          "Sometimes the answer is stepping away. When did you last take a break?",
+        ])
+      : pick([
+          "That's frustrating. What feels like the biggest obstacle right now?",
+          "Sometimes we're stuck because the goal needs adjusting, not us. Does this still feel right?",
+          "What helped you get unstuck in the past? You've overcome obstacles before.",
+          "Let's think smaller—what's the tiniest step forward you can imagine?",
+        ]);
   }
 
-  if (lowerMessage.includes('next') || lowerMessage.includes('focus')) {
+  if (isAboutProgress) {
     return isForeman
-      ? "Pick your top priority. What moves the needle most?"
-      : "What's calling to you? Sometimes our instincts know what matters.";
+      ? pick([
+          "Good work. Log it, then what's next?",
+          "That's execution. Keep that momentum.",
+          "Solid. Don't celebrate too long—what's the next milestone?",
+        ])
+      : pick([
+          "That's wonderful! 🎉 Take a moment to really feel that accomplishment.",
+          "You did that! How does it feel to have made that progress?",
+          "Amazing! What made the difference this time? That's worth remembering.",
+          "Celebrate this! Progress builds on progress. What's exciting you about what's next?",
+        ]);
   }
 
+  if (isAboutMotivation) {
+    return isForeman
+      ? pick([
+          "Motivation follows action, not the other way around. Start small.",
+          "You don't need to feel like it. You need to do it anyway.",
+          "Remember why you started. Is that reason still true?",
+        ])
+      : pick([
+          "It's natural for motivation to ebb and flow. What first drew you to this goal?",
+          "Sometimes reconnecting with our 'why' helps. What would achieving this mean for you?",
+          "Motivation often returns once we start moving. What's the gentlest first step?",
+          "What would you tell a friend who felt this way?",
+        ]);
+  }
+
+  if (isAboutAdjust) {
+    return isForeman
+      ? pick([
+          "Goals should serve you. What would make this more realistic?",
+          "Adjust fast, adjust often. What's the right target now?",
+          "If it's not working, change it. What's the new plan?",
+        ])
+      : pick([
+          "Goals can evolve—that's healthy and wise. What would feel more right to you now?",
+          "It's brave to reassess. What would serve you better at this point in your life?",
+          "Our needs change, and that's okay. What does success look like to you now?",
+        ]);
+  }
+
+  if (isAboutNext) {
+    return isForeman
+      ? pick([
+          "Pick your top priority. What moves the needle most?",
+          "One thing. What's the ONE thing that matters most today?",
+          "What would make everything else easier or unnecessary?",
+        ])
+      : pick([
+          "What's calling to you? Sometimes our instincts know what matters.",
+          "If you had to pick just one thing, what would feel most meaningful?",
+          "What would future-you thank you for doing today?",
+        ]);
+  }
+
+  if (isQuestion) {
+    return isForeman
+      ? pick([
+          "What do YOU think? You probably already know.",
+          "Trust your gut. What's it telling you?",
+          "You're asking the right questions. Now answer them.",
+        ])
+      : pick([
+          "That's a great question to sit with. What comes up for you?",
+          "What does your intuition say?",
+          "If you knew you couldn't fail, what would you choose?",
+        ]);
+  }
+
+  // Default varied responses
   return isForeman
-    ? "Got it. What action does that point to?"
-    : "I hear you. Tell me more about what that means for you.";
+    ? pick([
+        "Got it. What action does that point to?",
+        "And? What are you going to do about it?",
+        "Interesting. How does that affect your priorities?",
+        "Okay. So what's the move?",
+      ])
+    : pick([
+        "I hear you. Tell me more about what that means for you.",
+        "Thank you for sharing. What else is on your mind?",
+        "That's interesting. How do you feel about it?",
+        "I appreciate you opening up. What would be helpful to explore?",
+      ]);
 }
+
+// Note shown when LLM is not configured
+export const LLM_NOT_CONFIGURED_MESSAGE = 
+  "💡 For smarter AI responses, add VITE_OPENROUTER_API_KEY to web/.env (free at openrouter.ai)";
