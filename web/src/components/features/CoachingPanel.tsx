@@ -6,7 +6,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useUserStore } from '../../stores/user.store';
-import { PERSONA_PROMPTS } from '../../lib/config';
+import { useRalphStore } from '../../stores/ralph.store';
+import { getCoachingResponse, type ChatMessage } from '../../services/llm.service';
 import type { Goal, Persona } from '../../types';
 
 // ----------------------------------------------------------------------------
@@ -68,6 +69,7 @@ const QUICK_ACTIONS = [
 
 export function CoachingPanel({ goal, onClose }: CoachingPanelProps) {
   const persona = useUserStore((s) => s.persona) ?? 'supportive_peer';
+  const patterns = useRalphStore((s) => s.patterns);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -108,8 +110,22 @@ export function CoachingPanel({ goal, onClose }: CoachingPanelProps) {
       setIsLoading(true);
 
       try {
-        // Simulate AI response (in production, this would call OpenRouter)
-        const response = await simulateCoachingResponse(persona, content, goal, messages);
+        // Build chat history for LLM
+        const chatHistory: ChatMessage[] = messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+
+        // Get coaching response (uses real LLM if configured, falls back to simulation)
+        const response = await getCoachingResponse(content, chatHistory, {
+          persona,
+          goalText: goal?.text,
+          goalProgress: goal?.targetValue
+            ? Math.round((goal.currentValue / goal.targetValue) * 100)
+            : undefined,
+          goalStatus: goal?.status,
+          recentPatterns: patterns.slice(0, 3).map((p) => p.description),
+        });
 
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
@@ -134,7 +150,7 @@ export function CoachingPanel({ goal, onClose }: CoachingPanelProps) {
         setIsLoading(false);
       }
     },
-    [persona, goal, messages]
+    [persona, goal, messages, patterns]
   );
 
   const handleQuickAction = useCallback(
@@ -283,52 +299,6 @@ function getInitialGreeting(persona: Persona, goal?: Goal): string {
     : "Hey! I'm here whenever you want to talk through something. What's on your mind?";
 }
 
-async function simulateCoachingResponse(
-  persona: Persona,
-  userMessage: string,
-  goal: Goal | undefined,
-  _history: Message[]
-): Promise<string> {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 400));
-
-  const lowerMessage = userMessage.toLowerCase();
-
-  // Simple response logic (in production, this would be an LLM call)
-  if (lowerMessage.includes('stuck') || lowerMessage.includes('block')) {
-    return persona === 'shop_foreman'
-      ? "What's the smallest next action you could take? Sometimes momentum beats perfection."
-      : "That's frustrating. What feels like the biggest obstacle right now? Sometimes just naming it helps.";
-  }
-
-  if (lowerMessage.includes('progress') || lowerMessage.includes('celebrate') || lowerMessage.includes('win')) {
-    return persona === 'shop_foreman'
-      ? "Good work. Log it and keep moving. What's next?"
-      : "That's wonderful! 🎉 Take a moment to appreciate that. You earned it. What made it happen?";
-  }
-
-  if (lowerMessage.includes('adjust') || lowerMessage.includes('change') || lowerMessage.includes('modify')) {
-    return persona === 'shop_foreman'
-      ? "Goals should serve you. What would make this more realistic or meaningful?"
-      : "Goals can evolve—that's healthy. What would feel more right to you now?";
-  }
-
-  if (lowerMessage.includes('next') || lowerMessage.includes('focus')) {
-    if (goal) {
-      return persona === 'shop_foreman'
-        ? `For "${goal.text}": What's one thing you could do in the next 24 hours?`
-        : `Looking at "${goal.text}", what feels most important right now? Trust your gut.`;
-    }
-    return persona === 'shop_foreman'
-      ? "Pick your top priority. What moves the needle most?"
-      : "What's calling to you? Sometimes our instincts know what matters.";
-  }
-
-  // Default responses
-  return persona === 'shop_foreman'
-    ? "Got it. What action does that point to?"
-    : "I hear you. Tell me more about what that means for you.";
-}
 
 // ----------------------------------------------------------------------------
 // Compact Coaching Button

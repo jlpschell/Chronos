@@ -3,7 +3,7 @@
 Last updated: 2026-01-19
 
 ## Baseline Estimate
-- Overall: **~98%** (updated from 92%)
+- Overall: **100%** MVP Complete! 🎉
 - Basis: README MVP + specs
 
 ## MVP Checklist
@@ -68,11 +68,19 @@ Status legend: Done | In Progress | Not Started
 - Done - Hooks for integration (`web/src/hooks/useRalph.ts`)
 - Done - Transparency UI ("What I've learned") (`web/src/components/features/RalphTransparency.tsx`)
 - Done - Ralph page with AI explanation (`web/src/pages/Ralph.tsx`)
-- In Progress - UI integration points (suggestion components)
+- Done - UI integration points (`web/src/components/features/SuggestionCard.tsx`)
+  - SuggestionCard with accept/reject/modify actions
+  - GapFillSuggestion, BufferSuggestion, RecoverySuggestion, GoalNudgeSuggestion presets
+  - Automatic pattern checking (skips suggestions based on learned patterns)
+  - Hypothesis testing indicator
 
 ### Temporal Summaries
 - Done - Summary service + LLM narrative (`web/src/services/summary.service.ts`)
-- In Progress - Scheduling integration in UI/app lifecycle
+- Done - Scheduling integration (`web/src/hooks/useSummaryScheduler.ts`)
+  - Daily summaries at user's evening cutoff time
+  - Weekly summaries on Sundays
+  - Manual generation via hook
+  - Notification when summary is ready
 - Done - Summary display UI (`web/src/pages/Summary.tsx`, `web/src/components/features/SummaryPanel.tsx`)
 
 ### Offline-First & Privacy
@@ -127,11 +135,18 @@ Status legend: Done | In Progress | Not Started
 12. ~~Add coaching conversations UI.~~ ✓
 13. ~~Add global loading/empty states.~~ ✓
 
-### Remaining Polish Items
-- Wire encryption into actual data persistence (currently UI-ready)
-- Connect coaching to real LLM API (currently simulated)
-- Add scheduling integration for temporal summaries
-- Complete Ralph UI integration points for suggestions
+### All MVP Items Complete! ✓
+- ~~Wire encryption into actual data persistence~~ ✓ (`web/src/lib/encrypted-storage.ts`)
+- ~~Connect coaching to real LLM API~~ ✓ (`web/src/services/llm.service.ts`)
+- ~~Add scheduling integration for temporal summaries~~ ✓ (`web/src/hooks/useSummaryScheduler.ts`)
+- ~~Complete Ralph UI integration points for suggestions~~ ✓ (`web/src/components/features/SuggestionCard.tsx`)
+
+### Future Enhancements (Post-MVP)
+- Health data integration (wearables, energy tracking)
+- Multi-device sync
+- Native mobile apps
+- Advanced goal coaching conversations
+- Weekly planning ritual UI
 
 ## Notes / Concerns
 - Time GPS, Voice Input, and Calendar Sync are now functional end-to-end.
@@ -173,3 +188,11 @@ Status legend: Done | In Progress | Not Started
 - 2026-01-19: Integrated coaching into Ralph page with goal-specific context.
 - 2026-01-19: Added ConditionalState wrapper for consistent loading/empty/error handling.
 - 2026-01-19: Updated Timeline page with loading states and empty state.
+- 2026-01-19: Added encrypted storage layer (`web/src/lib/encrypted-storage.ts`) for OAuth tokens and contacts.
+- 2026-01-19: Added centralized LLM service (`web/src/services/llm.service.ts`) with fallback simulation.
+- 2026-01-19: Connected CoachingPanel to real LLM API with pattern context.
+- 2026-01-19: Added summary scheduler hook with daily/weekly scheduling.
+- 2026-01-19: Added SuggestionCard component with Ralph integration (accept/reject/modify).
+- 2026-01-19: Added preset suggestion components (GapFill, Buffer, Recovery, GoalNudge).
+- 2026-01-19: Integrated summary scheduler and auth restoration into app initialization.
+- 2026-01-19: **MVP COMPLETE** 🎉

@@ -16,11 +16,16 @@ import { useEventsStore } from './stores/events.store';
 import { useBouncerStore } from './stores/bouncer.store';
 import { useRalphStore } from './stores/ralph.store';
 import { NotificationTriggers } from './services/notification-triggers.service';
+import { useSummaryScheduler } from './hooks/useSummaryScheduler';
+import { loadStoredAuth } from './services/google-auth.service';
 
 export default function App() {
   const location = useLocation();
   const themeId = useUserStore((s) => s.themeId);
   const intakeCompleted = useUserStore((s) => s.intakeCompleted);
+
+  // Initialize summary scheduler (schedules daily/weekly summaries)
+  useSummaryScheduler();
 
   // Load data from DB on mount
   useEffect(() => {
@@ -28,6 +33,7 @@ export default function App() {
     useEventsStore.getState().loadFromDb();
     useBouncerStore.getState().loadFromDb();
     useRalphStore.getState().loadFromDb();
+    loadStoredAuth(); // Restore Google auth if available
   }, []);
 
   // Initialize notification triggers when intake is complete

@@ -14,3 +14,10 @@ export { DataManagement } from './DataManagement';
 export { LastSyncedIndicator, SyncStatusBar } from './LastSyncedIndicator';
 export { EncryptionSetup, EncryptionStatus } from './EncryptionSetup';
 export { CoachingPanel, CoachingButton } from './CoachingPanel';
+export {
+  SuggestionCard,
+  GapFillSuggestion,
+  BufferSuggestion,
+  RecoverySuggestion,
+  GoalNudgeSuggestion,
+} from './SuggestionCard';
