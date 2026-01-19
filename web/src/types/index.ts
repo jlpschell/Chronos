@@ -138,23 +138,48 @@ export interface VoiceMemo {
 }
 
 // ----------------------------------------------------------------------------
-// Goals
+// Goals (Blended Model: Habits, Projects, Events)
 // ----------------------------------------------------------------------------
 
+export type GoalType = 'habit' | 'project' | 'event';
 export type GoalStatus = 'active' | 'drifting' | 'completed' | 'archived';
+export type HabitFrequency = 'daily' | 'weekly' | 'monthly';
 
 export interface Goal {
   id: string;
   text: string;
-  targetValue: number | null;
-  currentValue: number;
-  unit: string | null;               // "clients", "chapters", etc.
-  deadline: Date | null;
+  goalType: GoalType;                // NEW: habit, project, or event
+  status: GoalStatus;
   createdAt: Date;
   lastActivity: Date | null;
   linkedEventIds: string[];
-  status: GoalStatus;
   nudgesSent: number;
+  
+  // --- PROJECT fields (linear progress) ---
+  targetValue: number | null;        // Target to reach (e.g., 100%)
+  currentValue: number;              // Current progress
+  unit: string | null;               // "clients", "chapters", "%", etc.
+  deadline: Date | null;             // When it's due
+  milestones: Milestone[];           // Sub-goals/checkpoints
+  
+  // --- HABIT fields (cyclical/recurring) ---
+  frequency: HabitFrequency | null;  // How often to do it
+  completedDates: string[];          // ISO date strings of completions
+  currentStreak: number;             // Current consecutive completions
+  longestStreak: number;             // Best streak ever
+  
+  // --- EVENT fields (point-in-time) ---
+  eventDate: Date | null;            // When the event happens
+  eventLocation: string | null;      // Where it is
+  reminderDays: number[];            // Days before to remind (e.g., [30, 7, 1])
+}
+
+export interface Milestone {
+  id: string;
+  text: string;
+  completed: boolean;
+  completedAt: Date | null;
+  order: number;
 }
 
 // ----------------------------------------------------------------------------

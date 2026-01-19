@@ -53,17 +53,17 @@ const VELOCITY_OPTIONS: StepOption<Velocity>[] = [
 const GEOMETRY_OPTIONS: StepOption<Geometry>[] = [
   {
     value: 'linear_horizon',
-    label: 'Path forward',
-    description: 'Time flows like a river toward my goals.',
-    icon: '→',
-    impact: 'Timeline view emphasizes progress toward milestones',
+    label: 'Projects & Progress',
+    description: 'Show me how far I am toward my goals and deadlines.',
+    icon: '📊',
+    impact: 'Dashboard opens to project progress bars and milestones',
   },
   {
     value: 'radial_watchface',
-    label: 'Rhythm & cycle',
-    description: 'Time moves in patterns—seasons, weeks, days.',
-    icon: '◐',
-    impact: 'Timeline view emphasizes recurring patterns and routines',
+    label: 'Habits & Streaks',
+    description: 'Show me my daily rhythms, streaks, and routines.',
+    icon: '🔥',
+    impact: 'Dashboard opens to habit tracker and streak calendars',
   },
 ];
 
@@ -200,8 +200,9 @@ const QUESTIONS: QuestionConfig[] = [
   },
   {
     id: 'geometry',
-    title: 'Your View',
-    question: 'When you picture time, how do you see it?',
+    title: 'Your Dashboard',
+    question: "What should I show you first when you open Chronos?",
+    voiceQuestion: "What should I show you first when you open Chronos?",
   },
   {
     id: 'constellation',
