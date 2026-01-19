@@ -10,6 +10,8 @@ import {
   ThemeSelector,
   GoalsPanel,
   DataManagement,
+  EncryptionSetup,
+  EncryptionStatus,
 } from '../components/features';
 
 export function SettingsPage() {
@@ -165,6 +167,15 @@ export function SettingsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Data</h2>
         <DataManagement />
+      </section>
+
+      {/* Security Section */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Security</h2>
+          <EncryptionStatus />
+        </div>
+        <EncryptionSetup />
       </section>
 
       {/* Bouncer Section */}

@@ -13,6 +13,16 @@ import { BouncerPanel } from '../components/features/BouncerPanel';
 import { SummaryPanel } from '../components/features/SummaryPanel';
 import { GoalsPanel } from '../components/features/GoalsPanel';
 import { DataManagement } from '../components/features/DataManagement';
+import { EncryptionSetup } from '../components/features/EncryptionSetup';
+import { CoachingPanel } from '../components/features/CoachingPanel';
+import {
+  Spinner,
+  LoadingInline,
+  SkeletonList,
+  EmptyState,
+  EmptyGoals,
+  ErrorState,
+} from '../components/ui';
 import { useUserStore } from '../stores/user.store';
 import { useEventsStore } from '../stores/events.store';
 import { useRalphStore } from '../stores/ralph.store';
@@ -584,6 +594,46 @@ export function ShowcasePage() {
           description="Export/import for offline-first data portability"
         >
           <DataManagement />
+        </Section>
+
+        {/* Encryption */}
+        <Section
+          title="Encryption"
+          description="Client-side encryption for sensitive data"
+        >
+          <EncryptionSetup />
+        </Section>
+
+        {/* Coaching */}
+        <Section
+          title="Coaching Conversations"
+          description="AI coaching for goal support"
+        >
+          <CoachingPanel />
+        </Section>
+
+        {/* Loading States */}
+        <Section
+          title="Loading & Empty States"
+          description="Consistent UI states across the app"
+        >
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium">Loading States</h4>
+              <div className="flex items-center gap-4">
+                <Spinner size="sm" />
+                <Spinner size="md" />
+                <Spinner size="lg" />
+              </div>
+              <LoadingInline message="Loading data..." />
+              <SkeletonList count={2} />
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium">Empty States</h4>
+              <EmptyGoals />
+              <ErrorState message="Something went wrong" onRetry={() => alert('Retry clicked')} />
+            </div>
+          </div>
         </Section>
 
         {/* Footer */}

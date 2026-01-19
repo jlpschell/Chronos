@@ -12,3 +12,5 @@ export { BouncerPreferences } from './BouncerPreferences';
 export { GoalsPanel } from './GoalsPanel';
 export { DataManagement } from './DataManagement';
 export { LastSyncedIndicator, SyncStatusBar } from './LastSyncedIndicator';
+export { EncryptionSetup, EncryptionStatus } from './EncryptionSetup';
+export { CoachingPanel, CoachingButton } from './CoachingPanel';

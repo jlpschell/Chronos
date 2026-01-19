@@ -3,7 +3,7 @@
 Last updated: 2026-01-19
 
 ## Baseline Estimate
-- Overall: **~92%** (updated from 85%)
+- Overall: **~98%** (updated from 92%)
 - Basis: README MVP + specs
 
 ## MVP Checklist
@@ -14,7 +14,12 @@ Status legend: Done | In Progress | Not Started
 - Done - App shell layout with navigation (`web/src/components/layout/AppLayout.tsx`)
 - Done - Routing for core areas (`web/src/app.tsx` using react-router-dom)
 - Done - Full Vite project setup with dependencies (`web/package.json`)
-- Not Started - Global loading/empty states
+- Done - Global loading/empty states (`web/src/components/ui/LoadingStates.tsx`)
+  - Spinner, LoadingOverlay, LoadingInline
+  - Skeleton loaders (text, card, list)
+  - Empty states (events, goals, notifications, patterns, calendars)
+  - Error state with retry
+  - ConditionalState wrapper component
 
 ### Intake Flow (60-second calibration)
 - Done - Intake UI screens (velocity, geometry, constellation) (`web/src/components/features/IntakeFlow.tsx`)
@@ -72,7 +77,11 @@ Status legend: Done | In Progress | Not Started
 
 ### Offline-First & Privacy
 - Done - Local-first schema + persistence utilities (`web/src/db/schema.ts`)
-- Not Started - Encryption at rest for sensitive fields
+- Done - Encryption at rest for sensitive fields (`web/src/lib/encryption.ts`)
+  - AES-GCM encryption using Web Crypto API
+  - Password-based key derivation (PBKDF2)
+  - Encrypts: access tokens, contacts, email addresses
+  - Setup UI with password creation/unlock (`web/src/components/features/EncryptionSetup.tsx`)
 - Done - Data export/import UI (`web/src/components/features/DataManagement.tsx`)
   - JSON export with all user data
   - Import with merge support
@@ -91,7 +100,11 @@ Status legend: Done | In Progress | Not Started
   - Status badges (active, drifting, completed, archived)
   - Deadline countdown with urgency colors
   - Filter by status (active/completed/all)
-- Not Started - Coaching conversations + goal drift detection UI
+- Done - Coaching conversations UI (`web/src/components/features/CoachingPanel.tsx`)
+  - Chat interface with persona-aware responses
+  - Quick action buttons (What's blocking me?, Celebrate a win, etc.)
+  - Goal-specific coaching context
+  - Integrated into Ralph page with goal selector
 
 ### Themes & Gamification
 - Done - Theme tokens + CSS variables (`web/src/styles/themes.css`)
@@ -110,9 +123,15 @@ Status legend: Done | In Progress | Not Started
 8. ~~Add Goal CRUD UI + progress views.~~ ✓
 9. ~~Add "Last synced" indicators across the app.~~ ✓
 10. ~~Add data export/import UI for offline-first credibility.~~ ✓
-11. Add encryption at rest for sensitive fields.
-12. Add coaching conversations UI.
-13. Add global loading/empty states.
+11. ~~Add encryption at rest for sensitive fields.~~ ✓
+12. ~~Add coaching conversations UI.~~ ✓
+13. ~~Add global loading/empty states.~~ ✓
+
+### Remaining Polish Items
+- Wire encryption into actual data persistence (currently UI-ready)
+- Connect coaching to real LLM API (currently simulated)
+- Add scheduling integration for temporal summaries
+- Complete Ralph UI integration points for suggestions
 
 ## Notes / Concerns
 - Time GPS, Voice Input, and Calendar Sync are now functional end-to-end.
@@ -147,3 +166,10 @@ Status legend: Done | In Progress | Not Started
 - 2026-01-19: Added LastSyncedIndicator with relative time and color-coded status.
 - 2026-01-19: Updated ShowcasePage with Goals and Data Management sections + mock data.
 - 2026-01-19: Integrated LastSyncedIndicator into CalendarConnect component.
+- 2026-01-19: Added encryption service with AES-GCM via Web Crypto API (`web/src/lib/encryption.ts`).
+- 2026-01-19: Added EncryptionSetup component with password create/unlock UI.
+- 2026-01-19: Added CoachingPanel with persona-aware chat interface and quick actions.
+- 2026-01-19: Added global loading/empty state components (`web/src/components/ui/LoadingStates.tsx`).
+- 2026-01-19: Integrated coaching into Ralph page with goal-specific context.
+- 2026-01-19: Added ConditionalState wrapper for consistent loading/empty/error handling.
+- 2026-01-19: Updated Timeline page with loading states and empty state.

@@ -5,9 +5,12 @@
 
 import { useState } from 'react';
 import { TimelineView } from '../components/features';
+import { useEventsStore } from '../stores/events.store';
+import { ConditionalState, EmptyEvents } from '../components/ui';
 import type { ChronosEvent } from '../types';
 
 export function TimelinePage() {
+  const { events, loading } = useEventsStore();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const handleEventClick = (event: ChronosEvent) => {
@@ -16,10 +19,24 @@ export function TimelinePage() {
 
   return (
     <div className="space-y-4">
-      <TimelineView
-        onEventClick={handleEventClick}
-        selectedEventId={selectedEventId}
-      />
+      <ConditionalState
+        isLoading={loading}
+        loadingMessage="Loading timeline..."
+        isEmpty={events.length === 0}
+        emptyState={
+          <EmptyEvents
+            onAdd={() => {
+              // Could open voice panel or event creation
+              window.location.href = '/voice';
+            }}
+          />
+        }
+      >
+        <TimelineView
+          onEventClick={handleEventClick}
+          selectedEventId={selectedEventId}
+        />
+      </ConditionalState>
 
       {selectedEventId && (
         <div className="rounded-lg border border-border bg-surface p-4">
