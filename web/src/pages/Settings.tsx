@@ -24,6 +24,7 @@ export function SettingsPage() {
     stats,
     preferences,
     updatePreferences,
+    setPersona,
     resetIntake,
   } = useUserStore();
 
@@ -56,9 +57,35 @@ export function SettingsPage() {
             <span className="font-medium">{constellationLabel}</span>
           </div>
           <div className="border-t border-border my-3" />
-          <div className="flex justify-between text-sm">
-            <span className="text-ink/60">AI Persona</span>
-            <span className="font-semibold text-accent">{personaLabel}</span>
+          <div className="flex justify-between items-center text-sm">
+            <div>
+              <span className="text-ink/60">AI Persona</span>
+              <p className="text-xs text-ink/40 mt-0.5">How the AI talks to you</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPersona('supportive_peer')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                  persona === 'supportive_peer'
+                    ? 'bg-accent text-white'
+                    : 'bg-ink/5 hover:bg-ink/10'
+                }`}
+              >
+                🤝 Supportive
+              </button>
+              <button
+                type="button"
+                onClick={() => setPersona('shop_foreman')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                  persona === 'shop_foreman'
+                    ? 'bg-accent text-white'
+                    : 'bg-ink/5 hover:bg-ink/10'
+                }`}
+              >
+                👷 Foreman
+              </button>
+            </div>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-ink/60">Bouncer mode</span>
@@ -69,7 +96,7 @@ export function SettingsPage() {
             className="mt-4 text-xs text-ink/50 hover:text-accent transition-colors"
             onClick={resetIntake}
           >
-            Recalibrate →
+            Recalibrate (redo intake) →
           </button>
         </div>
       </section>

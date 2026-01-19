@@ -37,6 +37,7 @@ interface UserStore extends UserState {
   updatePreferences: (prefs: Partial<UserPreferences>) => void;
   setBouncerMode: (mode: BouncerMode) => void;
   setThemeId: (themeId: ThemeId) => void;
+  setPersona: (persona: Persona) => void;
 
   // Contact management
   addEmergencyContact: (contact: Contact) => void;
@@ -172,6 +173,13 @@ export const useUserStore = create<UserStore>()(
       setThemeId: (themeId) => {
         set((state) => {
           state.themeId = themeId;
+        });
+        get().syncToDb();
+      },
+
+      setPersona: (persona) => {
+        set((state) => {
+          state.persona = persona;
         });
         get().syncToDb();
       },
