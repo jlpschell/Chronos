@@ -41,6 +41,16 @@ if not exist "web\node_modules" (
 echo.
 echo  All systems go! Launching Chronos...
 echo  Browser will open automatically.
+echo.
+
+:: Check for .env file and show helpful message
+if not exist "web\.env" (
+    echo  [TIP] No web\.env file found - that's OK!
+    echo        Calendar sync + AI features need API keys.
+    echo        See web\env.template for optional setup.
+    echo.
+)
+
 echo  Press Ctrl+C to stop.
 echo.
 

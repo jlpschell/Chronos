@@ -6,6 +6,7 @@
 import { useGoogleCalendar } from '../../hooks/useGoogleCalendar';
 import { LastSyncedIndicator } from './LastSyncedIndicator';
 import { useUserStore } from '../../stores/user.store';
+import { isGoogleConfigured } from '../../services/google-auth.service';
 
 export function CalendarConnect() {
   const {
@@ -23,6 +24,9 @@ export function CalendarConnect() {
 
   // Get calendar connections for last sync times
   const calendarConnections = useUserStore((s) => s.calendarsConnected);
+  
+  // Check if Google is configured
+  const googleConfigured = isGoogleConfigured();
 
   return (
     <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
@@ -30,7 +34,9 @@ export function CalendarConnect() {
         <div>
           <h2 className="text-lg font-semibold">Calendar Sync</h2>
           <p className="text-sm text-ink/60">
-            Connect Google Calendar to see and create events
+            {googleConfigured 
+              ? 'Connect Google Calendar to see and create events'
+              : 'Calendar sync available after setup'}
           </p>
         </div>
 
@@ -52,7 +58,7 @@ export function CalendarConnect() {
               Disconnect
             </button>
           </div>
-        ) : (
+        ) : googleConfigured ? (
           <button
             type="button"
             className="px-4 py-2 text-sm rounded bg-accent text-white hover:bg-accent/90"
@@ -60,6 +66,10 @@ export function CalendarConnect() {
           >
             Connect Google Calendar
           </button>
+        ) : (
+          <span className="px-3 py-1.5 text-sm rounded bg-amber-500/20 text-amber-600">
+            Setup Required
+          </span>
         )}
       </div>
 
@@ -123,13 +133,28 @@ export function CalendarConnect() {
       )}
 
       {/* Setup instructions if not configured */}
-      {!isAuthenticated && (
-        <div className="text-xs text-ink/50 border-t border-border pt-3 mt-3">
-          <p className="font-medium mb-1">First time setup?</p>
-          <p>
-            You need a Google Cloud project with Calendar API enabled.
-            Set <code className="bg-ink/10 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code> in your .env file.
+      {!isAuthenticated && !googleConfigured && (
+        <div className="text-xs border-t border-border pt-3 mt-3 bg-amber-500/5 -mx-4 -mb-4 p-4 rounded-b-lg">
+          <p className="font-medium mb-2 text-amber-600">📅 Optional: Connect Google Calendar</p>
+          <ol className="list-decimal list-inside space-y-1 text-ink/70">
+            <li>Create a project at <a href="https://console.cloud.google.com" target="_blank" rel="noopener" className="text-accent underline">Google Cloud Console</a></li>
+            <li>Enable "Google Calendar API"</li>
+            <li>Create OAuth credentials (Web application)</li>
+            <li>Add <code className="bg-ink/10 px-1 rounded">http://localhost:5173</code> to authorized origins</li>
+            <li>Create <code className="bg-ink/10 px-1 rounded">web/.env</code> with your Client ID:</li>
+          </ol>
+          <pre className="mt-2 p-2 bg-ink/10 rounded text-xs overflow-x-auto">
+VITE_GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com</pre>
+          <p className="mt-2 text-ink/50">
+            Full guide: <code className="bg-ink/10 px-1 rounded">docs/CALENDAR_SETUP.md</code>
           </p>
+        </div>
+      )}
+      
+      {/* Helpful tip for authenticated but not synced yet */}
+      {isAuthenticated && calendars.length === 0 && !isSyncing && (
+        <div className="text-xs text-ink/50 border-t border-border pt-3">
+          Click "Sync Now" to fetch your calendars
         </div>
       )}
     </div>

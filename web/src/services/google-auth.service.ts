@@ -125,20 +125,42 @@ export function loadStoredAuth(): boolean {
 // OAuth Flow
 // ----------------------------------------------------------------------------
 
-function getClientId(): string {
+function getClientId(): string | null {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  if (!clientId) {
-    throw new Error('VITE_GOOGLE_CLIENT_ID not configured. See docs/CALENDAR_SETUP.md');
-  }
-  return clientId;
+  return clientId || null;
 }
 
 function getRedirectUri(): string {
   return `${window.location.origin}/oauth/callback`;
 }
 
+/**
+ * Check if Google Calendar is configured (client ID exists)
+ */
+export function isGoogleConfigured(): boolean {
+  return !!getClientId();
+}
+
+/**
+ * Get setup instructions message
+ */
+export function getSetupInstructions(): string {
+  return 'Google Calendar not configured. Create web/.env with VITE_GOOGLE_CLIENT_ID. See docs/CALENDAR_SETUP.md';
+}
+
 export function initiateGoogleAuth() {
   const clientId = getClientId();
+  
+  if (!clientId) {
+    // Update auth state with helpful error instead of crashing
+    authState = {
+      ...authState,
+      error: getSetupInstructions(),
+    };
+    notifyListeners();
+    return;
+  }
+  
   const redirectUri = getRedirectUri();
   const scopes = CALENDAR_CONFIG.google.scopes.join(' ');
 
